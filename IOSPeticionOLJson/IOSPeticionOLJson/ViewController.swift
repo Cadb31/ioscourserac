@@ -14,7 +14,7 @@ class ViewController: UIViewController, UITextFieldDelegate  {
     let TEXT_TITLE = "Title:"
     let TEXT_AUTHORS = "Authors:"
     let TEXT_EXCEPTION_CONNECTION = "Se ha producido una excepción en la comunicación."
-    let TEXT_EXCEPTION_TEXTFIELD_VOID = "No se puede buscar algún libro, porque el campo de búsqueda esta vacio."
+    let TEXT_EXCEPTION_TEXTFIELD_VOID = "No se ha encontrado ningun libro con el ISBN: "
     let URL_SEARCH = "https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:"
     let jsonConnection = JSONCOnnection()
     
@@ -41,7 +41,6 @@ class ViewController: UIViewController, UITextFieldDelegate  {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         textISBN.resignFirstResponder()
-        setTextLiterals()
         
         let textSearch = textISBN.text!
         
@@ -49,13 +48,17 @@ class ViewController: UIViewController, UITextFieldDelegate  {
             showAlertBox(message: TEXT_EXCEPTION_TEXTFIELD_VOID)
         }else{
             do{           
-                let book = try jsonConnection.getJsonData(codISBN: textSearch)
-                bookTitle.text = book.title
-            
-                for author in book.authors{
-                    bookAuthors.text?.append(author)
+                let book = try jsonConnection.getJsonData(codISBN: textSearch)                
+                if(book.title != nil){
+                    setTextLiterals()
+                    bookTitle.text = book.title
+                    for author in book.authors{
+                        bookAuthors.text?.append(author)
+                    }
+                    bookImage.image = book.image
+                }else{
+                    showAlertBox(message: TEXT_EXCEPTION_TEXTFIELD_VOID + textSearch)
                 }
-                bookImage.image = book.image
             }catch{
                 showAlertBox(message: TEXT_EXCEPTION_CONNECTION)
                 print("Exception in method: textFieldShouldReturn")

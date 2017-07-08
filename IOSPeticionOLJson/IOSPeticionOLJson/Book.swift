@@ -12,7 +12,7 @@ import Foundation
 
 class Book {
 
-    var title: String = ""
+    var title: String! = nil
     var authors = [String]()
     var image: UIImage!
     
